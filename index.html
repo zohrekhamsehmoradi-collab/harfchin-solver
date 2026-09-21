@@ -1,0 +1,26 @@
+<!doctype html><html lang="fa" dir="rtl"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>حرف‌چین</title>
+<style>
+body{font-family:Tahoma;margin:auto;max-width:760px;padding:15px;background:#f4f5f7}
+.card{background:#fff;padding:16px;border-radius:18px}textarea{width:100%;height:80px;font:20px Tahoma}
+button{padding:10px 15px;margin:8px 4px 0 0;border:0;border-radius:10px}#find{background:#111;color:white}
+#results{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.w{background:#eee;padding:9px 12px;border-radius:10px}
+small{color:#777} 
+</style><div class="card"><h2>🔤 حرف‌چین</h2>
+<p>حروف را وارد کن؛ کلمات قابل‌ساخت نمایش داده می‌شوند.</p>
+<textarea id="l" placeholder="مثلاً: م ا ر د س"></textarea><br>
+<button id="find">پیدا کن</button><button id="clear">پاک کردن</button>
+<p id="s">در حال بارگذاری…</p><div id="results"></div></div>
+<script>
+let words=[];
+const $=x=>document.getElementById(x);
+function n(s){return s.replace(/ي/g,'ی').replace(/ى/g,'ی').replace(/ك/g,'ک').replace(/[^؀-ۿ]/g,'')}
+function c(s){let x={};for(let q of n(s))x[q]=(x[q]||0)+1;return x}
+function ok(w,a){let x=c(w);for(let q in x)if((a[q]||0)<x[q])return false;return true}
+function go(){let a=c($('l').value),r=words.filter(w=>w.length>=2&&ok(w,a)).sort((a,b)=>b.length-a.length||a.localeCompare(b,'fa'));
+$('s').textContent=r.length.toLocaleString('fa-IR')+' کلمه پیدا شد';
+$('results').innerHTML=r.map(w=>'<span class="w" data-w="'+w+'">'+w+'</span>').join('');
+document.querySelectorAll('.w').forEach(e=>e.onclick=()=>navigator.clipboard?.writeText(e.dataset.w))}
+$('find').onclick=go;$('l').oninput=go;$('clear').onclick=()=>{$('l').value='';$('results').innerHTML='';$('s').textContent=words.length.toLocaleString('fa-IR')+' واژه در بانک'};
+fetch('words.txt').then(r=>r.text()).then(t=>{words=[...new Set(t.split(/\s+/).map(n).filter(w=>w.length>=2))];$('s').textContent=words.length.toLocaleString('fa-IR')+' واژه در بانک'});
+</script>
